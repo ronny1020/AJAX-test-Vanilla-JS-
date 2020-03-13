@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ajax test</title>
+    <title>ajax api test</title>
 </head>
 
 <body>
@@ -15,19 +15,26 @@
 </body>
 
 <script>
-    document.getElementById('button').addEventListener('click', loadText)
-
-    function loadText() {
+    document.getElementById('button').addEventListener('click', loadUsers)
+        // load github users
+    function loadUsers() {
         var xhr = new XMLHttpRequest();
         console.log(xhr);
-        xhr.open('get', 'sample.txt', true);
+        xhr.open('get', 'https://api.github.com/users', true);
         xhr.onload = function() {
                 if (this.status == 200) {
-                    // 200 ok
-                    // 403 forbidden
-                    // 404 not find
-                    console.log(this.responseText);
-                    document.getElementById('context').innerHTML = this.responseText;
+                    var users = JSON.parse(this.responseText);
+                    var output = "";
+
+                    for (var i in users) {
+                        output += '<div>' +
+                            '<img src=' + users[i].avatar_url + '> <ul> <li>ID:' +
+                            users[i].id + '</li><li>login:' +
+                            users[i].login + '</li> </ul></div>';
+                    }
+
+
+                    document.getElementById('context').innerHTML = output;
                 } else if (this.status == 404) {
                     document.getElementById('context').innerHTML = "not found";
                 }
@@ -42,15 +49,6 @@
             // 2: request received
             // 3: processing request
             // 4: request finished and response is ready
-        xhr.onprogress = function() {
-            console.log("readyState: ", this.readyState);
-        }
-
-        xhr.onerror = function() {
-            console.log("error");
-        }
-
-
 
         xhr.send();
 
